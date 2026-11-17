@@ -12,7 +12,7 @@ Compatible vanilla and modded items get automatically detected when Valheim laun
 
 Find the pre-attached item stands by opening the Hammer's `Categories` tab and scrolling to `Item Stands` to access the catalogue, which has been optimized large item collections.
 
-![Item Stands Hammer tab](images/01-hammer-tab.webp)
+<img width="900" height="470" alt="Item Stands Hammer Tab View" src="https://github.com/user-attachments/assets/36e2e924-c88f-4ef9-ab86-9ff62f4c8743" />
 
 **Search**
 
@@ -22,16 +22,16 @@ Pre-attached item stands are excluded from regular Hammer searches. They can onl
 - Item categories
 - Mod names
 - Orientation: `horizontal` or `vertical`
-
-![Item Stands Hammer tab](images/02-item-menu.webp)
+  
+<img width="900" height="470" alt="Item Stand Search Example" src="https://github.com/user-attachments/assets/837f4162-f3c0-45b1-90a4-11a2774ed15e" />
 
 **Placement**
 
 - Placed stands function normally, including item removal, replacement and dismantling.
 - Horizontal stands show a temporary direction arrow while building to assist with orientation when an item lacks a placement preview.
 - Recipes include the normal stand materials plus one of the selected item, with no materials consumed in no-cost building mode.
-
-![Item stand placement with item attached](images/03-placement.webp)
+  
+<img width="900" height="470" alt="Placed Pre-Attached Item Stand Example" src="https://github.com/user-attachments/assets/165f0930-3aa1-4cef-81be-7dca43ffcf22" />
 
 ## Requirements & installation
 
