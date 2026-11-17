@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <!-- The only file to configure for a new mod or development machine. -->
+    <AssemblyName>ValeriusItemStandMenu</AssemblyName>
+    <RootNamespace>ItemStandMenu</RootNamespace>
+    <ModGuid>valerius.itemstandmenu</ModGuid>
+    <ModDisplayName>Valerius Item Stand Menu</ModDisplayName>
+    <ModVersion>1.0.0</ModVersion>
+    <ModDescription>Adds a client-side visual catalogue to Valheim's Hammer for placing item stands with an item already attached.</ModDescription>
+    <ModWebsiteUrl>https://github.com/SevDevonne/valheim-ItemStandMenu</ModWebsiteUrl>
+    <ModDependencies>denikson-BepInExPack_Valheim-5.4.2360;ValheimModding-Jotunn-2.30.2</ModDependencies>
+
+    <!-- Local development paths. -->
+    <ValheimPath></ValheimPath>
+    <BepInExCorePath></BepInExCorePath>
+    <ModDeployPath></ModDeployPath>
+    <JotunnDllPath></JotunnDllPath>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,150 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Mod-specific identity and machine-specific paths share one editable configuration. -->
+  <Import Project="$(MSBuildProjectDirectory)\ModConfig.props"
+          Condition="Exists('$(MSBuildProjectDirectory)\ModConfig.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <!-- Plugin identity and version are configured in ModConfig.props. -->
+    <Version>$(ModVersion)</Version>
+    <ValheimManagedPath>$(ValheimPath)\Valheim_Data\Managed</ValheimManagedPath>
+    <DeployPath>$(ModDeployPath)\$(AssemblyName)</DeployPath>
+  </PropertyGroup>
+
+  <!-- BepInPlugin attributes require compile-time constants, generated from ModConfig.props. -->
+  <PropertyGroup>
+    <GeneratedPluginMetadata>$(MSBuildProjectDirectory)\obj\PluginMetadata.g.cs</GeneratedPluginMetadata>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(GeneratedPluginMetadata)" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="GeneratePluginMetadata" BeforeTargets="CoreCompile" DependsOnTargets="ValidateModConfig">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\obj" />
+    <WriteLinesToFile File="$(GeneratedPluginMetadata)"
+      Lines="namespace $(RootNamespace) { public sealed partial class Plugin { public const string PluginGuid = &quot;$(ModGuid)&quot;%3B public const string PluginName = &quot;$(ModDisplayName)&quot;%3B public const string PluginVersion = &quot;$(ModVersion)&quot;%3B } }"
+      Overwrite="true" WriteOnlyWhenDifferent="true" />
+  </Target>
+
+  <!-- BuildUi is defined by assembly_valheim.dll. Never compile decompiled copies. -->
+  <ItemGroup>
+    <Compile Remove="**/BuildUi.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="assembly_utils">
+      <HintPath>$(ValheimManagedPath)\assembly_utils.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(ValheimManagedPath)\assembly_valheim.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.AssetBundleModule.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.UI.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(ValheimManagedPath)\Unity.TextMeshPro.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExCorePath)\BepInEx.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(BepInExCorePath)\0Harmony.dll</HintPath><Private>false</Private>
+    </Reference>
+    <Reference Include="Jotunn">
+      <HintPath>$(JotunnDllPath)</HintPath><Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="ValidateModConfig" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(AssemblyName)' == '' Or '$(RootNamespace)' == ''"
+           Text="Set AssemblyName and RootNamespace in ModConfig.props." />
+    <Error Condition="'$(ModGuid)' == '' Or '$(ModDisplayName)' == '' Or '$(ModDescription)' == '' Or '$(ModWebsiteUrl)' == ''"
+           Text="Set ModGuid, ModDisplayName, ModDescription, and ModWebsiteUrl in ModConfig.props." />
+    <Error Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch('$(ModVersion)', '^\d+\.\d+\.\d+$'))"
+           Text="Set ModVersion to X.Y.Z in ModConfig.props." />
+    <Error Condition="'$(ModDependencies)' == ''"
+           Text="Set ModDependencies in ModConfig.props to the required Thunderstore dependency strings." />
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\ModConfig.props')"
+           Text="Copy ModConfig.props.example to ModConfig.props and set mod identity and local paths." />
+    <Error Condition="'$(ValheimPath)' == '' Or '$(BepInExCorePath)' == '' Or '$(JotunnDllPath)' == ''"
+           Text="Set ValheimPath, BepInExCorePath, and JotunnDllPath in ModConfig.props." />
+    <Error Condition="'$(Configuration)' == 'Debug' And '$(ModDeployPath)' == ''"
+           Text="Set ModDeployPath in ModConfig.props for Debug deployment." />
+    <Error Condition="!Exists('$(ValheimManagedPath)\assembly_utils.dll')" Text="Missing assembly_utils.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\assembly_valheim.dll')"
+           Text="Missing assembly_valheim.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\UnityEngine.dll')"
+           Text="Missing UnityEngine.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\UnityEngine.CoreModule.dll')"
+           Text="Missing UnityEngine.CoreModule.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\UnityEngine.AssetBundleModule.dll')"
+           Text="Missing UnityEngine.AssetBundleModule.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\UnityEngine.PhysicsModule.dll')"
+           Text="Missing UnityEngine.PhysicsModule.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\UnityEngine.UI.dll')" Text="Missing UnityEngine.UI.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(ValheimManagedPath)\Unity.TextMeshPro.dll')" Text="Missing Unity.TextMeshPro.dll at $(ValheimManagedPath)" />
+    <Error Condition="!Exists('$(BepInExCorePath)\BepInEx.dll')"
+           Text="Missing BepInEx.dll at $(BepInExCorePath)" />
+    <Error Condition="!Exists('$(BepInExCorePath)\0Harmony.dll')"
+           Text="Missing 0Harmony.dll at $(BepInExCorePath)" />
+    <Error Condition="!Exists('$(JotunnDllPath)')"
+           Text="Missing Jotunn.dll at $(JotunnDllPath)" />
+  </Target>
+
+  <!-- MSBuild release target packages the mod and generates manifest JSON through PowerShell. -->
+  <PropertyGroup>
+    <PackageDirectory>$(MSBuildProjectDirectory)\Package</PackageDirectory>
+    <ReleaseDirectory>$(MSBuildProjectDirectory)\Releases</ReleaseDirectory>
+    <ReleaseZip>$(ReleaseDirectory)\$(AssemblyName)-$(Version).zip</ReleaseZip>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ReleaseImages Include="$(MSBuildProjectDirectory)\images\**\*.png" />
+  </ItemGroup>
+
+  <Target Name="PackageRelease" AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' And '$(DesignTimeBuild)' != 'true'">
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\README.md')"
+           Text="Release packaging requires README.md in the project directory." />
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\icon.png')"
+           Text="Release packaging requires icon.png in the project directory." />
+    <Error Condition="!Exists('$(TargetPath)')"
+           Text="Compiled plugin missing: $(TargetPath)" />
+
+    <RemoveDir Directories="$(PackageDirectory)" Condition="Exists('$(PackageDirectory)')" />
+    <MakeDir Directories="$(PackageDirectory)\plugins;$(ReleaseDirectory)" />
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(PackageDirectory)\plugins" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\README.md;$(MSBuildProjectDirectory)\icon.png"
+          DestinationFolder="$(PackageDirectory)" />
+    <Copy SourceFiles="@(ReleaseImages)"
+          DestinationFiles="@(ReleaseImages->'$(PackageDirectory)\images\%(RecursiveDir)%(Filename)%(Extension)')"
+          Condition="'@(ReleaseImages)' != ''" />
+
+    <!-- Generate manifest.json directly from ModConfig.props using PowerShell on Release builds. -->
+    <Exec Command="powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command &quot;$ErrorActionPreference='Stop'; [xml]$c=Get-Content -LiteralPath '$(MSBuildProjectDirectory)\ModConfig.props' -Raw; $p=$c.Project.PropertyGroup; $deps=@($p.ModDependencies -split '\s*;\s*' | Where-Object { $_ }); $m=[ordered]@{ name=[string]$p.AssemblyName; version_number=[string]$p.ModVersion; website_url=[string]$p.ModWebsiteUrl; description=[string]$p.ModDescription; dependencies=$deps }; $json=$m | ConvertTo-Json -Depth 5; [System.IO.File]::WriteAllText('$(PackageDirectory)\manifest.json', $json + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))&quot;" />
+    <ZipDirectory SourceDirectory="$(PackageDirectory)"
+                  DestinationFile="$(ReleaseZip)" Overwrite="true" />
+    <Message Importance="high" Text="Release ZIP: $(ReleaseZip)" />
+  </Target>
+
+  <!-- Debug auto-deployment retained. Generated plugin metadata stays in obj/. -->
+  <Target Name="DeployDebug" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <MakeDir Directories="$(DeployPath)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DeployPath)" />
+  </Target>
+</Project>

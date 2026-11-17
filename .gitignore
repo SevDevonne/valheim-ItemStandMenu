@@ -1,0 +1,9 @@
+# Local development paths and compiled outputs
+ModConfig.props
+bin/
+obj/
+Package/
+Releases/
+*.zip
+DEVELOPMENT.md
+DOCUMENTATION.md
