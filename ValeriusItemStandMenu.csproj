@@ -112,11 +112,7 @@
     <ReleaseZip>$(ReleaseDirectory)\$(AssemblyName)-$(Version).zip</ReleaseZip>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ReleaseImages Include="$(MSBuildProjectDirectory)\images\**\*.png" />
-  </ItemGroup>
-
-  <Target Name="PackageRelease" AfterTargets="Build"
+<Target Name="PackageRelease" AfterTargets="Build"
           Condition="'$(Configuration)' == 'Release' And '$(DesignTimeBuild)' != 'true'">
     <Error Condition="!Exists('$(MSBuildProjectDirectory)\README.md')"
            Text="Release packaging requires README.md in the project directory." />
@@ -131,11 +127,7 @@
           DestinationFolder="$(PackageDirectory)\plugins" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)\README.md;$(MSBuildProjectDirectory)\icon.png"
           DestinationFolder="$(PackageDirectory)" />
-    <Copy SourceFiles="@(ReleaseImages)"
-          DestinationFiles="@(ReleaseImages->'$(PackageDirectory)\images\%(RecursiveDir)%(Filename)%(Extension)')"
-          Condition="'@(ReleaseImages)' != ''" />
-
-    <!-- Generate manifest.json directly from ModConfig.props using PowerShell on Release builds. -->
+<!-- Generate manifest.json directly from ModConfig.props using PowerShell on Release builds. -->
     <Exec Command="powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command &quot;$ErrorActionPreference='Stop'; [xml]$c=Get-Content -LiteralPath '$(MSBuildProjectDirectory)\ModConfig.props' -Raw; $p=$c.Project.PropertyGroup; $deps=@($p.ModDependencies -split '\s*;\s*' | Where-Object { $_ }); $m=[ordered]@{ name=[string]$p.AssemblyName; version_number=[string]$p.ModVersion; website_url=[string]$p.ModWebsiteUrl; description=[string]$p.ModDescription; dependencies=$deps }; $json=$m | ConvertTo-Json -Depth 5; [System.IO.File]::WriteAllText('$(PackageDirectory)\manifest.json', $json + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))&quot;" />
     <ZipDirectory SourceDirectory="$(PackageDirectory)"
                   DestinationFile="$(ReleaseZip)" Overwrite="true" />
