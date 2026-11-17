@@ -1,4 +1,4 @@
-<img width="1920" height="1004" alt="image" src="https://github.com/user-attachments/assets/5fe9c193-8992-4717-971b-72787d5d1a23" /># Valerius Item Stand Menu
+# Valerius Item Stand Menu
 
 Adds a client-side visual catalogue to Valheim's Hammer for placing item stands with an item already attached.
 
